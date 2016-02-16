@@ -1,8 +1,12 @@
+# makeup-managed:begin
+include makeup.mk
+# makeup-managed:end
+
 include includes.mk
 
 SHORT_NAME := router
-GIT_SHA := $(shell git rev-parse --short HEAD)
-VERSION ?= git-${GIT_SHA}
+
+include ${MAKEUP_DIR}/makeup-bag-deis/versioning.mk
 
 REPO_PATH := github.com/deis/${SHORT_NAME}
 
@@ -19,13 +23,6 @@ BINDIR := ./rootfs/bin
 GO_FILES := $(wildcard *.go)
 GO_DIRS := model/ nginx/ utils/ utils/modeler
 GO_PACKAGES := ${REPO_PATH} $(addprefix ${REPO_PATH}/,${GO_DIRS})
-
-# The following variables describe the Docker image we build and where it
-# is pushed to.
-# If DEIS_REGISTRY is not set, try to populate it from legacy DEV_REGISTRY.
-DEIS_REGISTRY ?= ${DEV_REGISTRY}/
-IMAGE_PREFIX ?= deis
-IMAGE := ${DEIS_REGISTRY}${IMAGE_PREFIX}/${SHORT_NAME}:${VERSION}
 
 # The following variables describe k8s manifests we may wish to deploy
 # to a running k8s cluster in the course of development.
